@@ -35,7 +35,7 @@ class World3D:
         # exclude initial overlapping
         delta = 2.5*r
 
-        # first particle's coordinate is (delta, delta, 0)
+        # first particle's coordinate is (delta, delta, Lz/2)
         # In the vertical Z direction we the ring plane to be located at z = Lz/2
         x, y, z = delta, delta, self.Lz / 2
 
@@ -141,11 +141,8 @@ class World3D:
 
     # checks whether given index (i,j,k) belongs to the lattice
     def is_valid_lattice_index(self, i, j, k):
-        if 0 <= i < self.nx and 0 <= j < self.ny and 0 <= k < self.nz:
-            return True
-        else:
-            return False
-
+        return 0 <= i < self.nx and 0 <= j < self.ny and 0 <= k < self.nz
+            
     # returns indices of the closest image of a particle to the target particle
     def get_closest_image_of_particle(self, pid_target, pid):
         min_distance = self.diag
@@ -161,7 +158,6 @@ class World3D:
         return idx_n, idx_m
 
     # calculates force between two given particles
-    @staticmethod
     def calculate_force_between_particles(self, p1, p2):
         n = dv.dif(p1.rtd0, p2.rtd0)
         dist = n.value()
@@ -174,9 +170,8 @@ class World3D:
             xidot = dv.dot(g, n)
             force = -gamma*xidot - kappa*xi
             return dv.mul(n, force)
-        else:
-            n.nullify()
-            return n
+        n.nullify()
+        return n
 
     # prepares images for possible collision partners and calls calculate_force_between_particles to compute force
     def calculate_force(self, pid_1, pid_2):
